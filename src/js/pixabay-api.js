@@ -7,12 +7,14 @@ import SimpleLightbox from "simplelightbox";
 // Додатковий імпорт стилів
 import "simplelightbox/dist/simple-lightbox.min.css";
 
+import axios from 'axios';
+
 import renderCard from './render-functions.js';
 
 const form = document.querySelector('.form');
 const loader = document.getElementById('loader');
 
-function getImages(imgName) {
+/*function getImages(imgName) {
     const BASE_URL = 'https://pixabay.com';
     const END_POINT = '/api/';
     const options = {
@@ -32,7 +34,7 @@ function getImages(imgName) {
             }
             return res.json();
         })
-}
+}*/
 
 form.addEventListener('submit', event => {
     event.preventDefault();
@@ -52,8 +54,20 @@ form.addEventListener('submit', event => {
 
     showLoader();
 
-    getImages(userInput)
-        .then(data => {
+    const options = {
+        key: '42328453-99f2c5c34c77a0496905bbef3',
+        q: userInput,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: 'true',
+    }
+
+    const PARAMS = new URLSearchParams(options); 
+
+    /*getImages(userInput)*/
+    axios.get(`https://pixabay.com/api/?${PARAMS}`)
+        .then(response => {
+            const data = response.data;
             if (data.hits.length === 0) {
                 const gallery = document.querySelector('.cards');
                 gallery.innerHTML = '';
