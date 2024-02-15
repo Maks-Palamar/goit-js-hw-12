@@ -1,6 +1,6 @@
 export default function renderCard(cards) {
 const gallery = document.querySelector('.cards');
-    gallery.innerHTML = '';
+    /*gallery.innerHTML = '';*/
       cards.forEach(card => {
         const cardHTML =
             `<li class="card"> 
@@ -27,6 +27,7 @@ const gallery = document.querySelector('.cards');
                 </div>
              </li>`;
           gallery.innerHTML += cardHTML;
+          /*postList.insertAdjacentHTML("beforeend", markup);*/
           
     })
 }
