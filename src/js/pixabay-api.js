@@ -13,32 +13,15 @@ import renderCard from './render-functions.js';
 
 const form = document.querySelector('.form');
 const loader = document.getElementById('loader');
+const loadmoreBtn = document.querySelector('.load-more-btn');
 
-/*function getImages(imgName) {
-    const BASE_URL = 'https://pixabay.com';
-    const END_POINT = '/api/';
-    const options = {
-        key: '42328453-99f2c5c34c77a0496905bbef3',
-        q: imgName,
-        image_type: 'photo',
-        orientation: 'horizontal',
-        safesearch: 'true',
-    }
-    const PARAMS = new URLSearchParams(options);    
-    const url = BASE_URL + END_POINT + '?' + PARAMS;
+let page = 1;
+let perPage = 15;
+let userInput;
 
-    return fetch(url, options)
-        .then(res => {
-            if (!res.ok) {
-                throw new Error('Server responded with error');
-            }
-            return res.json();
-        })
-}*/
-
-form.addEventListener('submit', event => {
+form.addEventListener('submit', async (event) => {
     event.preventDefault();
-    const userInput = event.target.elements.search.value.trim();
+    userInput = event.target.elements.search.value.trim();
 
     if (userInput === "") {
         iziToast.show({
@@ -60,14 +43,16 @@ form.addEventListener('submit', event => {
         image_type: 'photo',
         orientation: 'horizontal',
         safesearch: 'true',
+        page: page,
+        per_page: perPage,
     }
 
     const PARAMS = new URLSearchParams(options); 
 
-    /*getImages(userInput)*/
-    axios.get(`https://pixabay.com/api/?${PARAMS}`)
-        .then(response => {
+    try {
+        const response = await axios.get(`https://pixabay.com/api/?${PARAMS}`)
             const data = response.data;
+            
             if (data.hits.length === 0) {
                 const gallery = document.querySelector('.cards');
                 gallery.innerHTML = '';
@@ -86,10 +71,37 @@ form.addEventListener('submit', event => {
                 lightbox.refresh();
                 hideLoader();
             }
-        })
-        .catch(error => {
-            console.log(error);
-        })
+        
+        page += 1;
+
+        
+        
+    } catch (error) {
+        console.log(error);   
+    }
+    
+})
+
+loadmoreBtn.addEventListener('click', async (event) => {
+    const options = {
+        key: '42328453-99f2c5c34c77a0496905bbef3',
+        q: userInput,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: 'true',
+        page: page,
+        per_page: perPage,
+    }
+
+    const PARAMS = new URLSearchParams(options); 
+
+    if (page > 1) {
+            const response = await axios.get(`https://pixabay.com/api/?${PARAMS}`)
+            const data = response.data;
+            renderCard(data.hits);
+                const lightbox = new SimpleLightbox(".cards a", { captionsData: "alt", captionDelay: 250, captionPosition: 'bottom' });
+                lightbox.refresh();
+        }
 })
 
 function showLoader() {
