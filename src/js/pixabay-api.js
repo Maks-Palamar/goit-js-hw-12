@@ -14,6 +14,8 @@ import renderCard from './render-functions.js';
 const form = document.querySelector('.form');
 const loader = document.getElementById('loader');
 const loadmoreBtn = document.querySelector('.load-more-btn');
+const newCard = document.querySelector('.card');
+let lastScrollPosition = window.pageYOffset;
 
 let page = 1;
 let perPage = 15;
@@ -53,7 +55,7 @@ const PARAMS = new URLSearchParams(options);
     try {
         const response = await axios.get(`https://pixabay.com/api/?${PARAMS}`)
         const data = response.data;
-            
+        window.scrollTo({ top: 0, behavior: 'smooth' });
             if (data.hits.length === 0) {
                 const gallery = document.querySelector('.cards');
                 gallery.innerHTML = '';
@@ -89,6 +91,8 @@ const PARAMS = new URLSearchParams(options);
 
 loadmoreBtn.addEventListener('click', async (event) => {
     showLoader();
+    /*window.scrollBy(0, cardSize)*/
+
     const options = {
         key: '42328453-99f2c5c34c77a0496905bbef3',
         q: userInput,
@@ -118,6 +122,7 @@ loadmoreBtn.addEventListener('click', async (event) => {
                 const lightbox = new SimpleLightbox(".cards a", { captionsData: "alt", captionDelay: 250, captionPosition: 'bottom' });
                 lightbox.refresh();
                 hideLoader();
+                scroll();
             }
 
         }
@@ -143,3 +148,23 @@ function showLoadBtn(params) {
 function hideLoadBtn(params) {
     loadmoreBtn.style.display = 'none';   
 }
+
+function scroll() {
+    const gallery = document.querySelector('.cards');
+    const cardHeight = gallery.firstElementChild.getBoundingClientRect().height;
+    window.scrollBy({ top: cardHeight * 2, behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+    const currentScrollPosition = window.pageYOffset;
+
+    if (currentScrollPosition > lastScrollPosition) {
+        // Scroll down
+        form.style.transform = 'translate(-50%, -130%)';
+    } else {
+        // Scroll up
+        form.style.transform = 'translate(-50%, 0)';
+    }
+
+    lastScrollPosition = currentScrollPosition;
+});
