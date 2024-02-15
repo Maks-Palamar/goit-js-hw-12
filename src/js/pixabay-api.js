@@ -88,7 +88,7 @@ form.addEventListener('submit', async (event) => {
 loadmoreBtn.addEventListener('click', async (event) => {
     showChangeLoader();
     hideLoadBtn();
-
+    
     const options = {
         key: '42328453-99f2c5c34c77a0496905bbef3',
         q: userInput,
@@ -122,6 +122,7 @@ loadmoreBtn.addEventListener('click', async (event) => {
                 hideChangeLoader();
                 hideLoader();
                 scroll();
+                page += 1;
             }
 
         }
