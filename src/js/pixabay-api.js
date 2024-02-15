@@ -19,8 +19,6 @@ let page = 1;
 let perPage = 15;
 let userInput = '';
 
-
-
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     userInput = event.target.elements.search.value.trim();
@@ -90,8 +88,8 @@ const PARAMS = new URLSearchParams(options);
 })
 
 loadmoreBtn.addEventListener('click', async (event) => {
-
-const options = {
+    showLoader();
+    const options = {
         key: '42328453-99f2c5c34c77a0496905bbef3',
         q: userInput,
         image_type: 'photo',
@@ -101,18 +99,31 @@ const options = {
         per_page: perPage,
     }
 
-const PARAMS = new URLSearchParams(options);
+    const PARAMS = new URLSearchParams(options);
 
     try {
         if (page > 1) {
             const response = await axios.get(`https://pixabay.com/api/?${PARAMS}`)
             const data = response.data;
-            renderCard(data.hits);
-            const lightbox = new SimpleLightbox(".cards a", { captionsData: "alt", captionDelay: 250, captionPosition: 'bottom' });
-            lightbox.refresh();
+            const totalPages = Math.ceil(data.totalHits / perPage);
+            if (page > totalPages) {
+                hideLoadBtn();
+                hideLoader();
+                    return iziToast.error({
+                    position: "bottomRight",
+                        message: "We're sorry, but you've reached the end of search results."
+                    })
+            } else {
+                renderCard(data.hits);
+                const lightbox = new SimpleLightbox(".cards a", { captionsData: "alt", captionDelay: 250, captionPosition: 'bottom' });
+                lightbox.refresh();
+                hideLoader();
+            }
+
         }
+
     }
-    catch {
+    catch (error) {
         console.log(error);
     }
 })
