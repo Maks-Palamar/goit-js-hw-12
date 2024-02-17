@@ -21,6 +21,8 @@ form.addEventListener('submit', async (event) => {
     userInput = event.target.elements.search.value.trim();
     page = 1;
 
+
+    
     if (userInput === "") {
         iziToast.show({
             title: 'Error',
@@ -73,6 +75,16 @@ form.addEventListener('submit', async (event) => {
             lightbox.refresh();
             hideLoader();
             showLoadBtn();
+            form.reset();
+
+            if (perPage > data.hits.length && response.status === 200) {
+                hideLoadBtn();
+                form.reset();
+                return iziToast.error({
+                position: "bottomRight",
+                    message: "We're sorry, but you've reached the end of search results."
+                })
+            }
         }
         
         page += 1;
@@ -80,7 +92,15 @@ form.addEventListener('submit', async (event) => {
         
         
     } catch (error) {
-        console.log(error);   
+        console.log(error);
+        hideLoadBtn();
+        hideChangeLoader();
+        hideLoader();
+        form.reset();
+        return iziToast.error({
+        position: "bottomRight",
+            message: "Sorry, something went wrong..."
+        })
     }
     
 })
@@ -123,12 +143,29 @@ loadmoreBtn.addEventListener('click', async (event) => {
                 hideLoader();
                 scroll();
                 page += 1;
+
+                if (perPage > data.hits.length && response.status === 200) {
+                hideLoadBtn();
+                form.reset();
+                return iziToast.error({
+                position: "bottomRight",
+                    message: "We're sorry, but you've reached the end of search results."
+                })
+                }
             }
 
         }
 
     } catch (error) {
         console.log(error);
+        hideLoadBtn();
+        hideChangeLoader();
+        hideLoader();
+        form.reset();
+        return iziToast.error({
+        position: "bottomRight",
+            message: "Sorry, something went wrong..."
+        })
     }
 })
 
